@@ -47,7 +47,6 @@ def cric_csv(url):
     results = pd.DataFrame.from_dict([file_row(file) for file in ziplist
                                       if 'info' in file]).set_index('match_id').rename_axis(index=None)
     
-    
     results = results[~results['result'].isin(['tie','no result'])] #remove draws
 
     match_stack = pd.concat([pd.read_csv(zipfile.open(file), dtype = {'ball':str, 'match_id':str},
@@ -101,11 +100,11 @@ def cric_read(leagues = ['ntb', 'ipl', 'cpl', 'psl', 'bbl', 't20s'], download = 
         league_df = pd.DataFrame.from_dict(league_dict, orient='index', columns=['league'])
         league_list = league_df[league_df.index.isin(leagues)]['league']
         
-        master_stack=pd.read_csv('../data/master/master_data.csv',
+        master_stack=pd.read_csv('../../data/master/master_data.csv',
                                  dtype={'ball':str, 'match_id':str}, parse_dates=['start_date'])
         master_stack = master_stack[master_stack['league'].isin(league_list)]
 
-        master_results = pd.read_csv('../data/master/master_results.csv', dtype = {0:str}).set_index(
+        master_results = pd.read_csv('../../data/master/master_results.csv', dtype = {0:str}).set_index(
                                      'Unnamed: 0').rename_axis(index=None)
         
         master_results = master_results[master_results.index.isin(master_stack['match_id'].unique())]
@@ -121,7 +120,7 @@ def cric_read(leagues = ['ntb', 'ipl', 'cpl', 'psl', 'bbl', 't20s'], download = 
         master_stack = pd.concat(match_stack_list,ignore_index = True)
         master_results = pd.concat(results_list)
 
-        master_stack.to_csv('../data/master/master_data.csv',index = False)
-        master_results.to_csv('../data/master/master_results.csv')
+        master_stack.to_csv('../../data/master/master_data.csv',index = False)
+        master_results.to_csv('../../data/master/master_results.csv')
 
     return master_stack, master_results

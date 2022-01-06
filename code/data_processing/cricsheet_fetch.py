@@ -1,8 +1,13 @@
+
+# this code takes the csv versions of the cricsheet.org data for t20i and league matches
+# it produces two csvs: a stacked version of all the ball-by-ball (bbb) data and the result and toss of each match
+# it adds a few new columns depicting game state (wickets, runs etc.) and removes games with no result, tie or super-over result.
+
 #---------------standard packages------------------
 import numpy as np
 import pandas as pd
 import datetime as dt
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 #-----------------zip processors-------------------
 from io import BytesIO
@@ -18,8 +23,8 @@ league_dict = {'ntb':'Vitality Blast', 'ipl':'Indian Premier League',
                'cpl':'Carribean Premier League', 'psl':'Pakistan Super League',
                'bbl':'Big Bash League', 't20s':'T20 Internationals'}
 
-#------------------cricket csvs--------------------
-def cric_csv(url):
+#--------------fetch bbb t20 data------------------
+def cricsheet_fetch(url):
 
     zipfile = ZipFile(BytesIO(urlopen(url).read()))
     ziplist = zipfile.namelist()
@@ -92,12 +97,12 @@ def cric_csv(url):
 
     return match_stack, results
 
-#------------------cricket read--------------------
-def cric_read(leagues = ['ntb', 'ipl', 'cpl', 'psl', 'bbl', 't20s']):
+#-------------loop over leagues/t20i---------------
+def multi_fetch(leagues = ['ntb', 'ipl', 'cpl', 'psl', 'bbl', 't20s']):
         
     match_stack_list, results_list = [], []
     for league in tqdm(leagues):
-        match_stack, results = cric_csv('https://cricsheet.org/downloads/' + league + '_male_csv2.zip')
+        match_stack, results = cricsheet_fetch('https://cricsheet.org/downloads/' + league + '_male_csv2.zip')
         match_stack_list.append(match_stack)
         results_list.append(results)
 
@@ -105,4 +110,4 @@ def cric_read(leagues = ['ntb', 'ipl', 'cpl', 'psl', 'bbl', 't20s']):
     pd.concat(results_list).to_csv('data/master/master_results.csv')
     
 #-------------------run script---------------------
-cric_read(['psl'])
+multi_fetch()

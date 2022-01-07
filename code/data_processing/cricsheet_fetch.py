@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 from tqdm import tqdm
+from pathlib import Path
 
 #-----------------zip processors-------------------
 from io import BytesIO
@@ -106,8 +107,8 @@ def multi_fetch(leagues = ['ntb', 'ipl', 'cpl', 'psl', 'bbl', 't20s']):
         match_stack_list.append(match_stack)
         results_list.append(results)
 
-    pd.concat(match_stack_list,ignore_index = True).to_csv('data/master/master_data.csv',index = False)
-    pd.concat(results_list).to_csv('data/master/master_results.csv')
+    pd.concat(match_stack_list,ignore_index = True).to_csv(Path('data/master/master_data.csv'),index = False)
+    pd.concat(results_list).to_csv(Path('data/master/master_results.csv'))
     
 #-------------------run script---------------------
 multi_fetch()

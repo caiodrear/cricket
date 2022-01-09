@@ -23,8 +23,8 @@ from io import TextIOWrapper
 league_dict = {'ntb':'Vitality Blast', 'ipl':'Indian Premier League',
                'cpl':'Carribean Premier League', 'psl':'Pakistan Super League',
                'bbl':'Big Bash League', 't20s':'T20 Internationals'}
-
-#--------------fetch bbb t20 data------------------
+               
+#----------------fetch bbb data--------------------
 def cricsheet_fetch(url):
 
     zipfile = ZipFile(BytesIO(urlopen(url).read()))

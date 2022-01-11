@@ -41,6 +41,7 @@ def cricsheet_fetch(url):
         reader = csv.reader(TextIOWrapper(zipfile.open(file), 'utf-8'))
         row_dict['match_id'] = file.replace('_info.csv','')
 
+        team_names = []
         for row in reader:
             if 'toss_winner' in row:
                  row_dict['toss_winner'] = row[-1]
@@ -48,6 +49,9 @@ def cricsheet_fetch(url):
                 row_dict['result'] = row[-1]
             elif 'outcome' in row:
                 row_dict['result'] = row[-1]
+            elif 'team' in row:
+                team_names.append(row[-1])
+        row_dict['match_name'] = team_names[0] + ' v ' + team_names[1]
         return row_dict
 
     results = pd.DataFrame.from_dict([file_row(file) for file in ziplist
@@ -96,6 +100,12 @@ def cricsheet_fetch(url):
         
     match_stack.reset_index(inplace = True, drop = True)
 
+    results = results.merge(match_stack[match_stack['innings'] == 1].drop_duplicates('match_id'),
+                            left_index = True, right_on = 'match_id').set_index('match_id')
+
+    results = results[['start_date', 'league', 'venue', 'match_name',
+                       'batting_team', 'bowling_team','toss_winner', 'result']].rename(columns = {'batting_team':'set_team',
+                                                                                                  'bowling_team':'chase_team'})
     return match_stack, results
 
 #-------------loop over leagues/t20i---------------

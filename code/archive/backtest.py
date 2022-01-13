@@ -3,39 +3,18 @@ import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
 import scipy.stats as scp
-import Levenshtein
 
-def backtest(data,betfair_data,lev_num=4):
+def backtest(test_data, ev_thresh = 0):
     
-    temp_data=data.copy()
-
-    temp_data['set_team'] = temp_data['set_team'].str.replace(' ', '')
-    temp_data['chase_team'] = temp_data['chase_team'].str.replace(' ', '')
-    betfair_data['team_a'] = betfair_data['team_a'].str.replace(' ', '')
-    betfair_data['team_b'] = betfair_data['team_b'].str.replace(' ', '')
-
-    set_team_odds=[]
-    chase_team_odds=[]
+    bt_df = test_data.copy()
     
-    for i in data.index:
+    bt_df['set_team_win'] = test_data['set_team'] == test_data['result']
+    bt_df['prob_set'] = test_data['set_prob']
+    bt_df['prob_chase'] = test_data['chase_prob']
+    bt_df['set_team_odds']=test_data['set_odds']
+    bt_df['chase_team_odds']=test_data['chase_odds'] 
     
-        date=temp_data['date'][i]
-        set_team=temp_data['set_team'][i]
-        chase_team=temp_data['chase_team'][i]
-        odds_data=betfair_data[betfair_data['date']==date]
-
-        if odds_data[odds_data.apply(lambda x: Levenshtein.distance(x['team_a'],set_team), axis=1)<lev_num].size>0:
-            set_team_odds.append(odds_data.loc[odds_data.apply(lambda x: Levenshtein.distance(x['team_a'],set_team), axis=1)<lev_num,'team_a_sp'].iloc[0])
-            chase_team_odds.append(odds_data.loc[odds_data.apply(lambda x: Levenshtein.distance(x['team_b'],chase_team), axis=1)<lev_num,'team_b_sp'].iloc[0])
-
-        elif odds_data[odds_data.apply(lambda x: Levenshtein.distance(x['team_a'],chase_team), axis=1)<lev_num].size>0:
-            chase_team_odds.append(odds_data.loc[odds_data.apply(lambda x: Levenshtein.distance(x['team_a'],chase_team), axis=1)<lev_num,'team_a_sp'].iloc[0])
-            set_team_odds.append(odds_data.loc[odds_data.apply(lambda x: Levenshtein.distance(x['team_b'],set_team), axis=1)<lev_num,'team_b_sp'].iloc[0])
-
-    bt_df=data[['set_team_win','prob_set','prob_chase']].copy()
-            
-    bt_df['set_team_odds']=set_team_odds
-    bt_df['chase_team_odds']=chase_team_odds   
+    bt_df = bt_df[['set_team_win','prob_set','prob_chase','set_team_odds','chase_team_odds']].reset_index(drop = True)
     
 #-------------------------------------------------backtest-------------------------------------------------------------
    
@@ -93,6 +72,7 @@ def backtest(data,betfair_data,lev_num=4):
             bankroll[1].append(bankroll_init*(1+stake_prop*bet_result[1]))
             bankroll[2].append(bankroll_init*(1+stake_prop*bet_result[2]))
         else:
+            
             bankroll[0].append(bankroll[0][i-1]*(1+stake_prop*bet_result[0]))
             bankroll[3].append(bankroll[3][i-1]*(1+kelly_prop*bet_result[0]))
 
@@ -170,9 +150,9 @@ def backtest(data,betfair_data,lev_num=4):
 
 #-----------------------------------------------------------charts--------------------------------------------------     
 
-    bt_results.plot.line(y=['exp_model','exp_back_fav','exp_lay_fav','exp_model_kelly'])
+    bt_results.plot.line(y=['exp_model','exp_back_fav','exp_lay_fav'])
     plt.show()
-    print(bt_metrics[['exp_model','exp_back_fav','exp_lay_fav','exp_model_kelly']])
+    print(bt_metrics[['exp_model','exp_back_fav','exp_lay_fav']])
     
     bt_results.plot.line(y=['lin_model','lin_back_fav','lin_lay_fav'])
     plt.show()

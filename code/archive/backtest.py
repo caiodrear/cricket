@@ -4,7 +4,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import scipy.stats as scp
 
-def backtest(test_data, ev_thresh = 0):
+def backtest(test_data, ev_thresh = 0, prop = 0.05):
     
     bt_df = test_data.copy()
     
@@ -17,8 +17,7 @@ def backtest(test_data, ev_thresh = 0):
     bt_df = bt_df[['set_team_win','prob_set','prob_chase','set_team_odds','chase_team_odds']].reset_index(drop = True)
     
 #-------------------------------------------------backtest-------------------------------------------------------------
-   
-    ev_thresh=0
+
     commission=0.02
     
 #------------------------------------------exponential backtest--------------------------------------------------------
@@ -27,7 +26,7 @@ def backtest(test_data, ev_thresh = 0):
 
     kelly_prop_set=(bt_df['set_team_odds']*bt_df['prob_set']-1)/(bt_df['set_team_odds']-1)
     kelly_prop_chase=(bt_df['chase_team_odds']*bt_df['prob_chase']-1)/(bt_df['chase_team_odds']-1)
-    stake_prop=np.mean([item for item in [max(l1,l2) for l1,l2 in zip(kelly_prop_set,kelly_prop_chase)] if item > 0])
+    stake_prop=prop#np.mean([item for item in [max(l1,l2) for l1,l2 in zip(kelly_prop_set,kelly_prop_chase)] if item > 0])
 
     bankroll=[[],[],[],[]]
     bet_result=[0,0,0]
@@ -46,7 +45,7 @@ def backtest(test_data, ev_thresh = 0):
 
         else:
             bet_result[0]=0
-
+            kelly_prop = 0
 #---------------------------------------------------back the favourite-------------------------------------    
 
         if bt_df['set_team_odds'][i]<bt_df['chase_team_odds'][i]:

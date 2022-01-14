@@ -10,7 +10,7 @@ the project also features some code to stream odds live from betfair, making use
 
 ### before running the model
 
-* run cricsheet_fetch to download the cricsheed data
+* run cricsheet_fetch to download the cricsheet data
 * run data_wrangle to wrangle the data for both models
 
 ## acknowledgments

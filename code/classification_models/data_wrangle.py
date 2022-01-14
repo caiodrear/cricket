@@ -130,4 +130,4 @@ def data_wrangle(model = 'all'):
         player_wrangle(match_stack, results)
         fe_wrangle(match_stack, results)
 #----------------------------------------------------
-#data_wrangle(model = 'fe')
+#data_wrangle(model = 'all')

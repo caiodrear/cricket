@@ -18,4 +18,4 @@ betfairlightweight by liampauling
 * [betfairlightweight](https://github.com/liampauling/betfair)
 
 data from cricsheet (also excellent)
-* [cricsheet](cricsheet.org)
+* [cricsheet](www.cricsheet.org)
